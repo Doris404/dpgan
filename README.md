@@ -1,3 +1,17 @@
+# Log
+## Environment Construction
+```bash
+# On 215
+cd /home/ruc/xiaotong/dpgan
+conda activate dpgan
+# On github
+# I freeze a requirements.txt in this folder also
+# see https://github.com/Doris404/dpgan for this repo
+```
+**24/3/19**
+- Run wgan.py with `python wgan.py`
+- Dosen't find epsilon in wgan.py
+
 # Differentially Private Generative Adversarial Network
 Liyang Xie, Kaixiang Lin, Shu Wang, Fei Wang, Jiayu Zhou
 

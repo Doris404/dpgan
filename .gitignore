@@ -168,3 +168,5 @@ source/main.pdf
 
 *.pdf
 
+.ipynb_checkpoints
+*.ipynb

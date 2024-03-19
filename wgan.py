@@ -7,13 +7,23 @@ import tensorflow.contrib as tc
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import cPickle as pickle
+# import cPickle as pickle
+import pickle
 from numpy import linalg, argmin, array, arange
 import matplotlib.gridspec as gridspec
 from utilize import normlization, loaddata, Rsample, MNIST_c
 import logging # these 2 lines ar used in GPU3
 logging.getLogger("tensorflow").setLevel(logging.ERROR)
 from visualize import *
+import datetime
+from datetime import timezone, timedelta
+timestamp = datetime.datetime.now().astimezone(timezone(timedelta(hours=8))).strftime("%Y%m%d")
+id_ = datetime.datetime.now().astimezone(timezone(timedelta(hours=8))).strftime("%Y%m%d-%H%M%S")
+
+try:
+    os.mkdir("./{}".format(timestamp))
+except:
+    pass
 
 
 class WassersteinGAN(object):
@@ -177,31 +187,44 @@ class WassersteinGAN(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('')
+   
     parser.add_argument('--data', type=str, default='mnist')
+    parser.add_argument('--data_path', type=str, default='./mnist/MNIST/')
     parser.add_argument('--model', type=str, default='mlp')
     parser.add_argument('--gpus', type=str, default='0')
+    parser.add_argument('--sigma_all', type=float, default=800.0)
+    parser.add_argument('--reg', type=float, default=2.5e-5)
+    parser.add_argument('--lr', type=float, default=5e-5)
+    parser.add_argument('--clipc', type=float, default=0.02)
+    parser.add_argument('--batch_size', type=int, default=64)
+    parser.add_argument('--num_batches', type=int, default=10000)
+    parser.add_argument('--plot_size', type=int, default=5)
+    parser.add_argument('--save_size', type=int, default=100000)
+    parser.add_argument('--d_iters', type=int, default=5)
     args = parser.parse_args()
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
     digits = ['2', '3', '4', '5']  # MNIST digits need to use
     for digit in digits:
+        # data_path = "/home/xieliyan/Desktop/data/MNIST/"
+        # path_output = "/home/xieliyan/Dropbox/GPU/GPU3/wgan/result/"
         tf.reset_default_graph()
         data = importlib.import_module(args.data)  # from parser
         model = importlib.import_module(args.data + '.' + args.model)
+        data_path = args.data_path
+        path_output = '{}/wgan/result/'.format(timestamp)
+        sigma_all = args.sigma_all  # total noise std added
+        reg = args.reg
+        lr = args.lr
+        cilpc = args.clipc
+        batch_size = args.batch_size
+        num_batches = args.num_batches
+        plot_size = args.plot_size
+        save_size = args.save_size
+        d_iters = args.d_iters
         # xs = data.DataSampler() # mnist/__init__.py, xs is a instance of class DataSampler
         zs = data.NoiseSampler()
         d_net = model.Discriminator()  # mnist/mlp.py, d_net is a instance of class Discriminator
         g_net = model.Generator()
-        sigma_all = 800.0  # total noise std added
-        reg = 2.5e-5
-        lr = 5e-5
-        cilpc = 0.02
-        batch_size = 64
-        num_batches = 10000  # 150000
-        plot_size = 5
-        save_size = 100000
-        d_iters = 5
         data_name = 'training'
-        data_path = "/home/xieliyan/Desktop/data/MNIST/"
-        path_output = "/home/xieliyan/Dropbox/GPU/GPU3/wgan/result/"
         wgan = WassersteinGAN(g_net, d_net, zs, args.data, args.model, sigma_all, digit, reg, lr, cilpc, batch_size, num_batches, plot_size, save_size, d_iters, data_name, data_path, path_output)
         wgan.train()

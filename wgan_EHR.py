@@ -6,7 +6,8 @@ import tensorflow as tf
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib as plt
-import cPickle as pickle
+# import cPickle as pickle
+import pickle
 from numpy import arange, random, ceil, mean, array, count_nonzero, zeros, eye
 from utilize import data_readf, c2b, c2bcolwise, splitbycol, gene_check, statistics, dwp, load_MIMICIII, fig_add_noise
 import logging # these 2 lines are used in GPU3
@@ -96,7 +97,7 @@ class MIMIC_WGAN(object):
             #     batchX = self.testX[idx[i * pretrainBatchSize:(i + 1) * pretrainBatchSize]]
             #     loss = self.sess.run(self.loss_ae, feed_dict={self.x: batchX})
             #     testLossVec.append(loss)
-            print 'Pretrain_Epoch:%d, trainLoss:%f' % (epoch, mean(trainLossVec))
+            print('Pretrain_Epoch:%d, trainLoss:%f' % (epoch, mean(trainLossVec)))
 
     def train(self, nEpochs, batchSize):
         start_time = time.time()
@@ -176,7 +177,7 @@ class MIMIC_WGAN(object):
         plt.savefig('./result/lossfig/WGAN-W-distance.jpg')
         plt.close()
         rv_pre, gv_pre, rv_pro, gv_pro = dwp(x_train, x_gene, self.testX, self.db)
-        print 'Totally ' + str(len(rv_pre)) + ' of coordinates are left'
+        print ('Totally ' + str(len(rv_pre)) + ' of coordinates are left')
         with open('./result/genefinalfig/rv_pre.pickle', 'wb') as fp:
             pickle.dump(rv_pre, fp)
         with open('./result/genefinalfig/gv_pre.pickle', 'wb') as fp:
@@ -230,18 +231,18 @@ class MIMIC_WGAN(object):
         auc_g_all = []
         MIMIC_data, dim_data = x_train, len(x_train[0])
         for col in range(dim_data):
-            print col
+            print (col)
             trainX, testX = splitbycol(self.dataType, self._VALIDATION_RATIO, col, MIMIC_data)
             if trainX == []:
-                print "skip this coordinate"
+                print ("skip this coordinate")
                 continue
             geneX = gene_check(col, x_gene) # process generated data by column
             if geneX == []:
-                print "skip this coordinate"
+                print ("skip this coordinate")
                 continue
             precision_r, precision_g, recall_r, recall_g, acc_r, acc_g, f1score_r, f1score_g, auc_r, auc_g = statistics(trainX, geneX, testX, col)
             if precision_r == []:
-                print "skip this coordinate"
+                print ("skip this coordinate")
                 continue
             precision_r_all.append(precision_r)
             precision_g_all.append(precision_g)
